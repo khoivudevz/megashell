@@ -1,0 +1,61 @@
+@import 'tailwindcss';
+
+@font-face {
+	font-family: 'FiraCodeNerdFont';
+	src: url('/fonts/FiraCodeNerdFontMono-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@theme {
+	--font-size-base: 14px;
+	--font-mono:
+		'FiraCodeNerdFont', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+:root {
+	--color-terminal-bg: #1e1e1e;
+}
+
+body {
+	background-color: transparent;
+	color: white;
+	margin: 0;
+	padding: 0;
+	font-family: var(--font-mono);
+	overflow: hidden;
+}
+
+.xterm-viewport,
+.xterm-screen {
+	background-color: transparent !important;
+}
+
+.background-blur {
+	@apply bg-black/50 backdrop-blur-xs;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #424242;
+	border-radius: 5px;
+	border: 2px solid transparent;
+	background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: #6e6e6e;
+}
+
+::-webkit-scrollbar-corner {
+	background: transparent;
+}
