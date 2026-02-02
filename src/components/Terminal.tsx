@@ -10,6 +10,7 @@ import '@xterm/xterm/css/xterm.css'
 import React, {useEffect, useRef, useState} from 'react'
 import SearchWidget from './SearchWidget'
 import {useLayoutStore} from '../store/useLayoutStore'
+import {useTerminalStore} from '../store/useTerminalStore'
 
 interface TerminalProps {
 	sessionId: string
@@ -161,15 +162,77 @@ const TerminalComponent: React.FC<TerminalProps> = ({
 			// Custom Key Handler (Ctrl+F, Ctrl+B)
 			term.attachCustomKeyEventHandler((arg) => {
 				if (arg.type === 'keydown' && (arg.ctrlKey || arg.metaKey)) {
-					if (arg.key.toLowerCase() === 'f') {
+					if (arg.key.toLowerCase() === 'f' && !arg.shiftKey) {
 						arg.preventDefault()
 						setIsSearchOpen((prev) => !prev)
 						return false
 					}
+					// Sidebar Toggle: Ctrl + B
 					if (arg.key.toLowerCase() === 'b') {
 						arg.preventDefault()
 						arg.stopPropagation()
 						useLayoutStore.getState().toggleSidebar()
+						return false
+					}
+
+					const termStore = useTerminalStore.getState()
+
+					// New Terminal: Ctrl + N
+					if (arg.key.toLowerCase() === 'n') {
+						arg.preventDefault()
+						arg.stopPropagation()
+						termStore.addTab()
+						return false
+					}
+
+					// Close Tabs: Ctrl + Q / Ctrl + Shift + Q
+					if (arg.key.toLowerCase() === 'q') {
+						arg.preventDefault()
+						arg.stopPropagation()
+						if (arg.shiftKey) {
+							termStore.removeAllTabs()
+						} else {
+							termStore.removeTab(termStore.activeTabId)
+						}
+						return false
+					}
+
+					// Close Other Tabs: Ctrl + Shift + O
+					if (arg.key.toLowerCase() === 'o' && arg.shiftKey) {
+						arg.preventDefault()
+						arg.stopPropagation()
+						termStore.removeOtherTabs(termStore.activeTabId)
+						return false
+					}
+
+					// Toggle Shortcuts Modal: Ctrl + Shift + /
+					if ((arg.key === '/' || arg.key === '?') && arg.shiftKey) {
+						arg.preventDefault()
+						arg.stopPropagation()
+						useLayoutStore.getState().toggleShortcutsModal()
+						return false
+					}
+
+					// Toggle Fullscreen: Ctrl + Shift + F
+					if (arg.key.toLowerCase() === 'f' && arg.shiftKey) {
+						arg.preventDefault()
+						arg.stopPropagation()
+						import('@tauri-apps/api/window').then(async (module) => {
+							const win = module.getCurrentWindow()
+							const isFS = await win.isFullscreen()
+							await win.setFullscreen(!isFS)
+						})
+						return false
+					}
+
+					// Antigravity: Ctrl + Shift + G
+					if (arg.key.toLowerCase() === 'g' && arg.shiftKey) {
+						arg.preventDefault()
+						arg.stopPropagation()
+						invoke('pty_write', {
+							id: sessionId,
+							data: 'antigravity .\r',
+						}).catch(console.error)
 						return false
 					}
 				}

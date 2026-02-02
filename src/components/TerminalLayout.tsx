@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import TerminalComponent from './Terminal'
 import useElementSize from '../hooks/use-element-size'
 import {cn} from '../utils/cn'
 import {PanelLeft} from 'lucide-react'
 import Sidebar from './Sidebar'
 import {useLayoutStore} from '../store/useLayoutStore'
+import {useTerminalStore} from '../store/useTerminalStore'
 import {useLayoutShortcuts} from '../hooks/use-layout-shortcuts'
 
 export interface Tab {
@@ -24,62 +25,14 @@ const TerminalLayout: React.FC = () => {
 
 	useLayoutShortcuts()
 
-	const [tabs, setTabs] = useState<Tab[]>([
-		{id: 'start-session', title: 'PowerShell'},
-	])
-	const [activeTabId, setActiveTabId] = useState('start-session')
-
-	const handleNewTab = () => {
-		const newId = `session-${Date.now()}`
-		setTabs([...tabs, {id: newId, title: 'PowerShell'}])
-		setActiveTabId(newId)
-	}
-
-	const handleCloseTab = (e: React.MouseEvent, id: string) => {
-		e.stopPropagation()
-		const newTabs = tabs.filter((t) => t.id !== id)
-		if (newTabs.length === 0) {
-			// If all tabs closed, maybe close window or reset?
-			// For now, spawn a new one to keep app usable
-			const newId = `session-${Date.now()}`
-			setTabs([{id: newId, title: 'PowerShell'}])
-			setActiveTabId(newId)
-		} else {
-			setTabs(newTabs)
-			if (activeTabId === id) {
-				setActiveTabId(newTabs[newTabs.length - 1].id)
-			}
-		}
-	}
-
-	const handleTitleChange = (id: string, title: string) => {
-		setTabs((prevTabs) =>
-			prevTabs.map((tab) => {
-				if (tab.id === id) {
-					// Clean up title if needed (e.g. remove "Administrator: ")
-					let newTitle = title.trim()
-					// If it's a path, maybe just show the folder name?
-					// For now, let's just use what the shell sends.
-					return {...tab, title: newTitle || 'PowerShell'}
-				}
-				return tab
-			})
-		)
-	}
+	const {tabs, activeTabId, updateTabTitle} = useTerminalStore()
 
 	return (
 		<div
 			ref={layoutRef}
 			className='flex flex-row min-h-dvh h-full overflow-hidden bg-transparent text-gray-300'
 		>
-			<Sidebar
-				ref={sidebarRef}
-				tabs={tabs}
-				activeTabId={activeTabId}
-				setActiveTabId={setActiveTabId}
-				handleNewTab={handleNewTab}
-				handleCloseTab={handleCloseTab}
-			/>
+			<Sidebar ref={sidebarRef} />
 
 			<div
 				className={cn('relative order-2')}
@@ -104,7 +57,7 @@ const TerminalLayout: React.FC = () => {
 					>
 						<TerminalComponent
 							sessionId={tab.id}
-							onTitleChange={(title) => handleTitleChange(tab.id, title)}
+							onTitleChange={(title) => updateTabTitle(tab.id, title)}
 						/>
 					</div>
 				))}

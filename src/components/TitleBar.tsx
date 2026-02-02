@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {getCurrentWindow} from '@tauri-apps/api/window'
-import {Maximize, Minimize, Minus, X} from 'lucide-react'
+import {Maximize, Minimize, Minus, X, CircleHelp} from 'lucide-react'
 import {useLayoutStore} from '../store/useLayoutStore'
 
 export default function TitleBar() {
@@ -57,9 +57,18 @@ export default function TitleBar() {
 			className='h-7.5 flex select-none bg-black/50 text-[#cccccc] fixed top-0 left-0 right-0 z-50 backdrop-blur-sm'
 		>
 			{/* Icon / Title Area - also draggable */}
+			{/* Icon / Title Area - also draggable */}
 			<div className='flex items-center px-3 text-xs flex-1 pointer-events-none'>
 				<img src='/icon.png' alt='icon' className='w-4 h-4 mr-2' />
 				<span>Megashell</span>
+			</div>
+
+			<div
+				className='inline-flex justify-center items-center px-3 h-full hover:bg-[rgba(255,255,255,0.1)] cursor-pointer transition-colors text-gray-400 hover:text-white'
+				onClick={() => useLayoutStore.getState().toggleShortcutsModal()}
+				title='Shortcuts'
+			>
+				<CircleHelp className='size-4' />
 			</div>
 
 			{/* Window Controls */}

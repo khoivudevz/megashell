@@ -1,27 +1,18 @@
-import {Tab} from './TerminalLayout'
+import {useTerminalStore} from '../store/useTerminalStore'
 import {useLayoutStore} from '../store/useLayoutStore'
 import {PanelLeftClose} from 'lucide-react'
 
 type Props = {
-	tabs: Tab[]
-	activeTabId: string
-	setActiveTabId: (id: string) => void
-	handleNewTab: () => void
-	handleCloseTab: (e: React.MouseEvent, id: string) => void
 	ref: React.RefObject<HTMLDivElement | null>
 }
 
-const Sidebar = ({
-	tabs,
-	activeTabId,
-	setActiveTabId,
-	handleNewTab,
-	handleCloseTab,
-	ref,
-}: Props) => {
+const Sidebar = ({ref}: Props) => {
 	const layoutHeight = useLayoutStore((state) => state.layout.height)
 	const headerHeight = useLayoutStore((state) => state.header.height)
 	const isSidebarOpen = useLayoutStore((state) => state.isSidebarOpen)
+
+	const {tabs, activeTabId, addTab, removeTab, setActiveTabId} =
+		useTerminalStore()
 
 	if (!isSidebarOpen) return <div ref={ref} className='hidden' />
 
@@ -33,7 +24,7 @@ const Sidebar = ({
 		>
 			<div className='p-2 border-t border-black/20 flex gap-2'>
 				<button
-					onClick={handleNewTab}
+					onClick={addTab}
 					className='flex-1 h-8 flex items-center justify-center rounded bg-black/60 hover:bg-black/80 text-white text-sm transition-colors'
 				>
 					<span>New Terminal</span>
@@ -74,7 +65,10 @@ const Sidebar = ({
 						</span>
 						<span className='truncate flex-1'>{tab.title}</span>
 						<button
-							onClick={(e) => handleCloseTab(e, tab.id)}
+							onClick={(e) => {
+								e.stopPropagation()
+								removeTab(tab.id)
+							}}
 							className='opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[#404040]'
 						>
 							<svg
