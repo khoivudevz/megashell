@@ -14,10 +14,11 @@ export interface Tab {
 }
 
 const TerminalLayout: React.FC = () => {
-	const [sidebarRef, sidebarSize] = useElementSize()
 	const [layoutRef, layoutSize] = useElementSize()
 	const setLayoutSize = useLayoutStore((state) => state.setLayoutSize)
 	const headerHeight = useLayoutStore((state) => state.header.height)
+	const sidebarWidth = useLayoutStore((state) => state.sidebarWidth)
+	const isSidebarOpen = useLayoutStore((state) => state.isSidebarOpen)
 
 	useEffect(() => {
 		setLayoutSize(layoutSize)
@@ -32,35 +33,37 @@ const TerminalLayout: React.FC = () => {
 			ref={layoutRef}
 			className='flex flex-row min-h-dvh h-full overflow-hidden bg-transparent text-gray-300'
 		>
-			<Sidebar ref={sidebarRef} />
+			<Sidebar />
 
 			<div
 				className={cn('relative order-2')}
 				style={{
 					width:
-						sidebarSize.width > 0
-							? `calc(100dvw - ${sidebarSize.width}px)`
+						isSidebarOpen && sidebarWidth > 0
+							? `calc(100dvw - ${sidebarWidth}px)`
 							: '100%',
 				}}
 			>
 				{/* Drag region for top area of terminal if needed, or just let sidebar handle it */}
-				{tabs.map((tab) => (
-					<div
-						key={tab.id}
-						className={`absolute inset-0 w-full h-full ${activeTabId === tab.id ? 'z-10 visible' : 'z-0 invisible'}`}
-						style={{
-							height:
-								layoutSize.height > 0
-									? `calc(${layoutSize.height}px - ${headerHeight}px)`
-									: '100%',
-						}}
-					>
-						<TerminalComponent
-							sessionId={tab.id}
-							onTitleChange={(title) => updateTabTitle(tab.id, title)}
-						/>
-					</div>
-				))}
+				{[...tabs]
+					.sort((a, b) => a.id.localeCompare(b.id))
+					.map((tab) => (
+						<div
+							key={tab.id}
+							className={`absolute inset-0 w-full h-full ${activeTabId === tab.id ? 'z-10 visible' : 'z-0 invisible'}`}
+							style={{
+								height:
+									layoutSize.height > 0
+										? `calc(${layoutSize.height}px - ${headerHeight}px)`
+										: '100%',
+							}}
+						>
+							<TerminalComponent
+								sessionId={tab.id}
+								onTitleChange={(title) => updateTabTitle(tab.id, title)}
+							/>
+						</div>
+					))}
 			</div>
 			{!useLayoutStore((state) => state.isSidebarOpen) && (
 				<button

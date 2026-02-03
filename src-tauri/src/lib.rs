@@ -50,7 +50,8 @@ fn pty_spawn(
         })
         .map_err(|e| e.to_string())?;
 
-    let cmd = CommandBuilder::new("powershell");
+    let mut cmd = CommandBuilder::new("powershell");
+    cmd.args(["-NoLogo", "-NoExit", "-Command", "Import-Module PSReadLine; Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete"]);
     let mut child = pair.slave.spawn_command(cmd).map_err(|e| e.to_string())?;
 
     let mut reader = pair.master.try_clone_reader().map_err(|e| e.to_string())?;

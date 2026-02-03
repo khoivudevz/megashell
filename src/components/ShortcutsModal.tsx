@@ -9,9 +9,9 @@ const shortcuts = [
 	{key: 'Ctrl + Shift + O', description: 'Close Other Tabs'},
 	{key: 'Ctrl + B', description: 'Toggle Sidebar'},
 	{key: 'Ctrl + F', description: 'Find / Search'},
-	{key: 'Ctrl + Shift + /', description: 'Toggle Shortcuts Modal'},
 	{key: 'Ctrl + Shift + F', description: 'Toggle Fullscreen'},
 	{key: 'Ctrl + Shift + G', description: 'Run Antigravity'},
+	{key: 'Ctrl + Shift + /', description: 'Toggle Shortcuts Modal'},
 ]
 
 const ShortcutsModal = () => {
