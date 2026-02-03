@@ -57,7 +57,6 @@ export default function TitleBar() {
 			className='h-7.5 flex select-none bg-black/50 text-[#cccccc] fixed top-0 left-0 right-0 z-50 backdrop-blur-sm'
 		>
 			{/* Icon / Title Area - also draggable */}
-			{/* Icon / Title Area - also draggable */}
 			<div className='flex items-center px-3 text-xs flex-1 pointer-events-none'>
 				<img src='/icon.png' alt='icon' className='w-4 h-4 mr-2' />
 				<span>Megashell</span>

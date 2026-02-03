@@ -51,7 +51,8 @@ fn pty_spawn(
         .map_err(|e| e.to_string())?;
 
     let mut cmd = CommandBuilder::new("powershell");
-    cmd.args(["-NoLogo", "-NoExit", "-Command", "Import-Module PSReadLine; Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete"]);
+    let script = "Import-Module PSReadLine; Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { $l=$null; $c=$null; [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$l, [ref]$c); $s=$c-1; while($s -ge 0 -and $l[$s] -notmatch '\\s') { $s-- }; $s++; $w=$l.Substring($s, $c-$s); if($w -and $w -notmatch '^[./\\\\]' -and (Test-Path (\".\\\" + $w + \"*\"))){ [Microsoft.PowerShell.PSConsoleReadLine]::Delete($s, $w.Length); [Microsoft.PowerShell.PSConsoleReadLine]::Insert(\".\\\" + $w) }; [Microsoft.PowerShell.PSConsoleReadLine]::MenuComplete() }";
+    cmd.args(["-NoLogo", "-NoExit", "-Command", script]);
     let mut child = pair.slave.spawn_command(cmd).map_err(|e| e.to_string())?;
 
     let mut reader = pair.master.try_clone_reader().map_err(|e| e.to_string())?;
