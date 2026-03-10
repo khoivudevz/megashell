@@ -12,6 +12,11 @@ const shortcuts = [
 	{key: 'Ctrl + Shift + F', description: 'Toggle Fullscreen'},
 	{key: 'Ctrl + Shift + G', description: 'Run Antigravity'},
 	{key: 'Ctrl + Shift + /', description: 'Toggle Shortcuts Modal'},
+	{key: 'gint', description: 'Git Snippet: git init'},
+	{key: 'ga', description: 'Git Snippet: git add .'},
+	{key: 'gcmt "msg"', description: 'Git Snippet: git commit -m "msg"'},
+	{key: 'gpsh branch', description: 'Git Snippet: git push origin branch'},
+	{key: 'gpl branch', description: 'Git Snippet: git pull origin branch'},
 ]
 
 const ShortcutsModal = () => {
@@ -37,7 +42,7 @@ const ShortcutsModal = () => {
 		<div className='fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm'>
 			<div
 				ref={modalRef}
-				className='w-[400px] bg-[#1a1a1a] border border-white/10 rounded-lg shadow-2xl overflow-hidden'
+				className='w-[400px] bg-[#1a1a1a] border border-white/10 rounded-lg shadow-2xl overflow-hidden max-h-[70dvh] flex flex-col'
 			>
 				<div className='flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#252525]'>
 					<h2 className='text-sm font-semibold text-gray-200'>
@@ -50,7 +55,7 @@ const ShortcutsModal = () => {
 						<X className='w-4 h-4' />
 					</button>
 				</div>
-				<div className='p-4 space-y-3'>
+				<div className='p-4 space-y-3 overflow-y-auto'>
 					{shortcuts.map((shortcut) => (
 						<div
 							key={shortcut.key}
